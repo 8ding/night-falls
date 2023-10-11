@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class WeaponControl : MonoBehaviour
 {
@@ -13,15 +14,54 @@ public class WeaponControl : MonoBehaviour
     int parentSortingOrder;
 	[SerializeField]
 	private Transform bulletPosition;
-    // Start is called before the first frame update
-    void Start()
+	private ObjectPool<Projectile> objectPool;
+
+	public ObjectPool<Projectile> ObjectPool
+	{
+		get
+		{
+			if (objectPool == null)
+			{
+				objectPool = new ObjectPool<Projectile>(OnCreateBullet, OnGetBullet, OnTakeBullet, OnDestroyBullet);
+			}
+			return objectPool;
+		}
+	}
+
+	// Start is called before the first frame update
+	void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         parentSortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder;
+		
 	}
-
-    // Update is called once per frame
-    void Update()
+	private Projectile OnCreateBullet()
+	{
+		Projectile res = Instantiate(bullet.gameObject, bulletPosition.position, Quaternion.identity).GetComponent<Projectile>();
+		if (res == null)
+		{
+			Debug.LogError("Ã»µÃµ½");
+			return null;
+		}
+		res.PlaceInPool(ObjectPool);
+		return res;
+	}
+	private void OnGetBullet(Projectile bullet)
+	{
+		bullet.gameObject.SetActive(true);
+		bullet.SetPosition(bulletPosition.position);
+	}
+	private void OnTakeBullet(Projectile bullet)
+	{
+		
+		bullet.gameObject.SetActive(false);
+	}
+	private void OnDestroyBullet(Projectile bullet)
+	{
+		Destroy(bullet.gameObject);
+	}
+	// Update is called once per frame
+	void Update()
 	{
 		PointToMouse();
 		CheckFire();
@@ -48,9 +88,8 @@ public class WeaponControl : MonoBehaviour
 	{
 		if (Input.GetMouseButtonDown(0))
 		{
-			Projectile bullets = Instantiate(bullet.gameObject, bulletPosition.position, Quaternion.identity).GetComponent<Projectile>();
+			Projectile bullets = ObjectPool.Get();
 			bullets.PointToDirection(pointDirection);
-
 		}
 	}
 }
