@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7320189556636067247}
   - component: {fileID: 7010582377414907289}
   - component: {fileID: 245019788914511277}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bullet_Small
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,7 +140,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6455649849111692954}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -171,5 +171,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71071f1cbb48a0944855add224cc4ff8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 30
-  range: 40
+  id: 0
+  moveSpeed: 0.5
+  range: 3

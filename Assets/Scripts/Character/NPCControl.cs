@@ -8,6 +8,8 @@ public class NPCControl : MonoBehaviour
 {
     private Vector3 mousePosition;
 	List<PathNode> nodes;
+	[SerializeField]
+	private float speed;
     [SerializeField]
     NPCMove NPCMove;
     Vector2 direction;
@@ -21,25 +23,26 @@ public class NPCControl : MonoBehaviour
     // Update is called once per frame
     void Update()
 	{
-		//HandleInput();
+		HandleInput();
 		DealLogicMove();
-	}
-	private void FixedUpdate()
-	{
-		NPCMove.Move(direction);
+		NPCMove.Move(direction, speed);
 	}
 	private void DealLogicMove()
 	{
 		if (nodes.Count > 0)
 		{
-			if ((nodes[0].WorldPosition - transform.position).magnitude > 0.1)
+			//如果当前节点的位置与本体的位置距离小于等于一帧移动的距离，则这一帧移动方向改为下个节点方向
+			if ((nodes[0].WorldPosition - transform.position).magnitude <= (direction* speed *Time.deltaTime).magnitude+0.01f)
 			{
-				direction = nodes[0].WorldPosition - transform.position;
-				direction.Normalize();
-			}
-			else
-			{
+				transform.position = nodes[0].WorldPosition;
 				nodes.RemoveAt(0);
+				if (nodes.Count > 0)
+				{
+					direction = nodes[0].WorldPosition - transform.position;
+					direction.Normalize();
+				}
+				else
+					direction = Vector2.zero;
 			}
 		}
 		else

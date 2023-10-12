@@ -4,14 +4,13 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Pool;
 
-public class WeaponControl : MonoBehaviour
+public class Weapon : MonoBehaviour
 {
     [SerializeField]
-    Projectile bullet;
-    SpriteRenderer spriteRenderer;
+    Projectile bulletSpawn;
+	int idCount = 0;
     private Vector3 pointDirection;
-    private Vector3 mousePosition;
-    int parentSortingOrder;
+
 	[SerializeField]
 	private Transform bulletPosition;
 	private ObjectPool<Projectile> objectPool;
@@ -31,29 +30,28 @@ public class WeaponControl : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        parentSortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder;
+ 
 		
 	}
 	private Projectile OnCreateBullet()
 	{
-		Projectile res = Instantiate(bullet.gameObject, bulletPosition.position, Quaternion.identity).GetComponent<Projectile>();
+		Projectile res = Instantiate(bulletSpawn.gameObject, bulletPosition.position, Quaternion.identity).GetComponent<Projectile>();
 		if (res == null)
 		{
-			Debug.LogError("没得到");
 			return null;
 		}
+		res.id = idCount;
+		idCount++;
 		res.PlaceInPool(ObjectPool);
 		return res;
 	}
 	private void OnGetBullet(Projectile bullet)
 	{
 		bullet.gameObject.SetActive(true);
-		bullet.SetPosition(bulletPosition.position);
+
 	}
 	private void OnTakeBullet(Projectile bullet)
 	{
-		
 		bullet.gameObject.SetActive(false);
 	}
 	private void OnDestroyBullet(Projectile bullet)
@@ -61,35 +59,22 @@ public class WeaponControl : MonoBehaviour
 		Destroy(bullet.gameObject);
 	}
 	// Update is called once per frame
-	void Update()
-	{
-		PointToMouse();
-		CheckFire();
-	}
 
-	private void PointToMouse()
+
+	public void PointToDirection(Vector3 pointDirection)
 	{
-		mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		pointDirection = new Vector3(mousePosition.x, mousePosition.y, transform.position.z) - transform.position;
+	
+		this.pointDirection = pointDirection;
 		pointDirection.Normalize();
 		//z轴旋转值
 		float zDegree = Mathf.Atan2(pointDirection.y, pointDirection.x) * Mathf.Rad2Deg;
-		if (zDegree > -90f && zDegree < 90f)
-			spriteRenderer.flipY = false;
-		else
-			spriteRenderer.flipY = true;
-		if (zDegree > 45 && zDegree < 135)
-			spriteRenderer.sortingOrder = parentSortingOrder - 1;
-		else
-			spriteRenderer.sortingOrder = parentSortingOrder + 1;
 		transform.rotation = Quaternion.Euler(0, 0, zDegree);
 	}
-	private void CheckFire()
+	public void Fire()
 	{
-		if (Input.GetMouseButtonDown(0))
-		{
-			Projectile bullets = ObjectPool.Get();
-			bullets.PointToDirection(pointDirection);
-		}
+		Projectile bullets = ObjectPool.Get();
+		bullets.SetPosition(bulletPosition.position);
+		bullets.PointToDirection(pointDirection);
+
 	}
 }
