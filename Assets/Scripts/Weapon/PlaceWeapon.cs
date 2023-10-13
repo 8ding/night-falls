@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -56,7 +57,24 @@ public class PlaceWeapon : MonoBehaviour, IShootable
 		if (targetEnemy == null)
 		{
 			targetEnemy = collision.GetComponent<NPCControl>();
+			if (targetEnemy != null)
+			{
+				if (targetEnemy.IsInLight < 1)
+				{
+					targetEnemy.setInlight += setTarget;
+					targetEnemy.setOutlight += ReleaseTarget;
+                    targetEnemy = null;
+				}
+			}
 		}
+	}
+	private void setTarget(NPCControl enemy)
+	{
+		targetEnemy = enemy;
+	}
+	private void ReleaseTarget()
+	{
+		targetEnemy = null;
 	}
 	private void OnTriggerExit2D(Collider2D collision)
 	{
@@ -65,6 +83,8 @@ public class PlaceWeapon : MonoBehaviour, IShootable
 			NPCControl nPCControl = targetEnemy.GetComponent<NPCControl>();
 			if (nPCControl != null && nPCControl == targetEnemy)
 			{
+				targetEnemy.setInlight -= setTarget;
+				targetEnemy.setOutlight -= ReleaseTarget;
 				targetEnemy = null;
 			}
 		}
