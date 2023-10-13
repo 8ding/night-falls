@@ -10,6 +10,7 @@ public class Weapon : MonoBehaviour
     Projectile bulletSpawn;
 	int idCount = 0;
     private Vector3 pointDirection;
+	private Rigidbody2D rigidbody2;
 
 	[SerializeField]
 	private Transform bulletPosition;
@@ -30,7 +31,7 @@ public class Weapon : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
     {
- 
+		rigidbody2 = GetComponent<Rigidbody2D>();
 		
 	}
 	private Projectile OnCreateBullet()
@@ -68,7 +69,7 @@ public class Weapon : MonoBehaviour
 		pointDirection.Normalize();
 		//zÖáÐý×ªÖµ
 		float zDegree = Mathf.Atan2(pointDirection.y, pointDirection.x) * Mathf.Rad2Deg;
-		transform.rotation = Quaternion.Euler(0, 0, zDegree);
+		rigidbody2.rotation = zDegree;
 	}
 	public void Fire()
 	{

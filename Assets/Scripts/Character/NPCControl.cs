@@ -14,6 +14,7 @@ public class NPCControl : MonoBehaviour
     NPCMove NPCMove;
     Vector3 nextPosition;
 	private bool isMoving;
+	Vector2 direction;
     // Start is called before the first frame update
     void Start()
     {
@@ -26,7 +27,7 @@ public class NPCControl : MonoBehaviour
 	{
 		HandleInput();
 		DealLogicMove();
-		NPCMove.Move(nextPosition, speed,isMoving);
+		NPCMove.Move(direction, speed,isMoving);
 	}
 	private void DealLogicMove()
 	{
@@ -42,6 +43,7 @@ public class NPCControl : MonoBehaviour
 			if (nodes.Count > 0)
 			{
 				nextPosition = nodes[0].WorldPosition;
+				direction = (nextPosition - transform.position).normalized;
 				nodes.RemoveAt(0);
 			}
 			else
@@ -64,6 +66,7 @@ public class NPCControl : MonoBehaviour
 				if (nodes != null)
 				{
 					nextPosition = nodes[0].WorldPosition;
+					direction = nextPosition - transform.position;
 					nodes.RemoveAt(0);
 				}
 			}
