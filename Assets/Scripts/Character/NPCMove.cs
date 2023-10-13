@@ -11,11 +11,11 @@ public class NPCMove : MonoBehaviour
     {
         rgBody2D = GetComponent<Rigidbody2D>();
     }
-    public void Move(Vector3 direction,float speed)
+    public void Move(Vector3 position,float speed,bool isMoving)
     {
-        if (direction.magnitude > 0)
+        if (isMoving)
         {
-			transform.position = (transform.position + direction * speed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, position, speed * Time.deltaTime);
 		}
     }
     // Update is called once per frame

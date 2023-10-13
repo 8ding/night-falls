@@ -12,7 +12,8 @@ public class NPCControl : MonoBehaviour
 	private float speed;
     [SerializeField]
     NPCMove NPCMove;
-    Vector2 direction;
+    Vector3 nextPosition;
+	private bool isMoving;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,29 +26,28 @@ public class NPCControl : MonoBehaviour
 	{
 		HandleInput();
 		DealLogicMove();
-		NPCMove.Move(direction, speed);
+		NPCMove.Move(nextPosition, speed,isMoving);
 	}
 	private void DealLogicMove()
 	{
-		if (nodes.Count > 0)
+
+		//如果当前节点的位置与本体的位置距离小于等于一帧移动的距离，则这一帧移动方向改为下个节点方向
+		if (Vector3.Distance(transform.position,nextPosition) > speed*Time.deltaTime+0.01f)
 		{
-			//如果当前节点的位置与本体的位置距离小于等于一帧移动的距离，则这一帧移动方向改为下个节点方向
-			if ((nodes[0].WorldPosition - transform.position).magnitude <= (direction* speed *Time.deltaTime).magnitude+0.01f)
-			{
-				transform.position = nodes[0].WorldPosition;
-				nodes.RemoveAt(0);
-				if (nodes.Count > 0)
-				{
-					direction = nodes[0].WorldPosition - transform.position;
-					direction.Normalize();
-				}
-				else
-					direction = Vector2.zero;
-			}
+			isMoving = true;
 		}
 		else
 		{
-			direction = Vector2.zero;
+			transform.position = nextPosition;
+			if (nodes.Count > 0)
+			{
+				nextPosition = nodes[0].WorldPosition;
+				nodes.RemoveAt(0);
+			}
+			else
+			{
+				isMoving = false;
+			}
 		}
 	}
 
@@ -61,6 +61,11 @@ public class NPCControl : MonoBehaviour
 				GameManager.Instance.ClearColor();
 				mousePosition = currentMousePosition;
 				nodes = GameManager.Instance.GetPath(transform.position, currentMousePosition);
+				if (nodes != null)
+				{
+					nextPosition = nodes[0].WorldPosition;
+					nodes.RemoveAt(0);
+				}
 			}
 		}
 	}
