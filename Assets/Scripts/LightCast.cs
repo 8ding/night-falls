@@ -32,7 +32,6 @@ public class LightCast : MonoBehaviour
         NPCControl nPCControl = collision.GetComponent<NPCControl>();
         if (nPCControl != null)
         {
-            Debug.Log("¼ì²â³ö");
             nPCControl.IsInLight--;
         }
     }

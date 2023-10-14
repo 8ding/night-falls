@@ -29,6 +29,7 @@ public class Projectile : MonoBehaviour
 		transform.rotation = Quaternion.Euler( 0,0, zDegree);
         moveDirection = direction;
 	}
+    //使用rigidbody2D进行移动，作为对象池对象时就不得不用transform瞬移,否则在不同帧就会出现闪烁
     public void SetPosition(Vector2 position)
     {
         transform.position = position;
@@ -41,7 +42,8 @@ public class Projectile : MonoBehaviour
 		if (moveDirection != Vector2.zero)
         {
             rigidbody2.MovePosition(rigidbody2.position + moveDirection.normalized * moveSpeed * Time.fixedDeltaTime);
-            if (Vector2.Distance(originPosition,rigidbody2.position) >= range)
+            //使用transform进行瞬移就要用transform进行判断
+            if (Vector2.Distance(originPosition,transform.position) >= range)
             {
                 pool.Release(this);
             }

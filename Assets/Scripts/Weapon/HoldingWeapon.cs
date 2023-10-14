@@ -9,13 +9,14 @@ public class HoldingWeapon : MonoBehaviour,IShootable
 	private Vector3 pointDirection;
 	private SpriteRenderer spriteRenderer;
 	private int parentSortingOrder;
-	void Start()
-	{
-		weapon = GetComponent<Weapon>();
-		spriteRenderer = GetComponent<SpriteRenderer>();
+    private void Start()
+    {
+        weapon = GetComponent<Weapon>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
 		parentSortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder;
-	}
-	public void CheckPointTo()
+        
+    }
+    public void CheckPointTo()
 	{
 		Vector3 mousePosition = DealPosition.GetWorldMousePosition(0);
 		pointDirection = mousePosition - transform.position;
@@ -42,11 +43,12 @@ public class HoldingWeapon : MonoBehaviour,IShootable
 		CheckPointTo();
 		CheckOrder();
 		CheckShoot();
+
 	}
-	/// <summary>
-	/// ºÏ≤‚ «∑Ò…‰ª˜
-	/// </summary>
-	public void CheckShoot()
+    /// <summary>
+    /// ºÏ≤‚ «∑Ò…‰ª˜
+    /// </summary>
+    public void CheckShoot()
 	{
 		if (Input.GetMouseButtonDown(0))
 		{

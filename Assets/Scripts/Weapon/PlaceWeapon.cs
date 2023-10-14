@@ -23,7 +23,7 @@ public class PlaceWeapon : MonoBehaviour, IShootable
 	{
 		if (targetEnemys.Count>0)
 		{
-			fireTime += Time.deltaTime;
+            fireTime += Time.deltaTime;
 			if (fireTime >= timeFire)
 			{
 				weapon.Fire();

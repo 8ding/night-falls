@@ -45,7 +45,7 @@ public class NPCControl : MonoBehaviour
     void Update()
 	{
 
-		HandleInput();
+		//HandleInput();
 		DealLogicMove();
 
 	}

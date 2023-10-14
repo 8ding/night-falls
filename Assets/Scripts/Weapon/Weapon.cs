@@ -8,14 +8,11 @@ public class Weapon : MonoBehaviour
 {
     [SerializeField]
     Projectile bulletSpawn;
-	int idCount = 0;
     private Vector3 pointDirection;
-	private Rigidbody2D rigidbody2;
 
 	[SerializeField]
 	private Transform bulletPosition;
 	private ObjectPool<Projectile> objectPool;
-
 	public ObjectPool<Projectile> ObjectPool
 	{
 		get
@@ -31,8 +28,7 @@ public class Weapon : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
     {
-		rigidbody2 = GetComponent<Rigidbody2D>();
-		
+		pointDirection = Vector2.right;
 	}
 	private Projectile OnCreateBullet()
 	{
@@ -41,8 +37,6 @@ public class Weapon : MonoBehaviour
 		{
 			return null;
 		}
-		res.id = idCount;
-		idCount++;
 		res.PlaceInPool(ObjectPool);
 		return res;
 	}
@@ -64,12 +58,14 @@ public class Weapon : MonoBehaviour
 
 	public void PointToDirection(Vector3 pointDirection)
 	{
-	
-		this.pointDirection = pointDirection;
-		pointDirection.Normalize();
-		//z轴旋转值
-		float zDegree = Mathf.Atan2(pointDirection.y, pointDirection.x) * Mathf.Rad2Deg;
-		rigidbody2.rotation = zDegree;
+		if(Vector3.Angle(this.pointDirection,pointDirection)> 2f)
+		{
+            this.pointDirection = pointDirection;
+            pointDirection.Normalize();
+            //z轴旋转值
+            float zDegree = Mathf.Atan2(pointDirection.y, pointDirection.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0,0,zDegree);
+        }
 	}
 	public void Fire()
 	{
