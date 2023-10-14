@@ -5,23 +5,23 @@ using UnityEngine;
 
 public class PlaceWeapon : MonoBehaviour, IShootable
 {
-	private NPCControl targetEnemy;
+	private List<NPCControl> targetEnemys;
 	private Weapon weapon;
 	private float fireTime;
 	[SerializeField]
 	private float timeFire;
 	public void CheckPointTo()
 	{
-		if (targetEnemy != null)
+		if (targetEnemys.Count > 0)
 		{
-			Vector3 direction = targetEnemy.transform.position - transform.position;
+			Vector3 direction = targetEnemys[0].transform.position - transform.position;
 			weapon.PointToDirection(direction.normalized);
 		}
 	}
 
 	public void CheckShoot()
 	{
-		if (targetEnemy != null)
+		if (targetEnemys.Count>0)
 		{
 			fireTime += Time.deltaTime;
 			if (fireTime >= timeFire)
@@ -40,7 +40,7 @@ public class PlaceWeapon : MonoBehaviour, IShootable
 	// Start is called before the first frame update
 	void Start()
     {
-		targetEnemy = null;
+		targetEnemys = new List<NPCControl>();
 		weapon = GetComponent<Weapon>();
 		fireTime = timeFire;
 
@@ -54,39 +54,39 @@ public class PlaceWeapon : MonoBehaviour, IShootable
     }
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
-		if (targetEnemy == null)
+		NPCControl nPCControl = collision.GetComponent<NPCControl>();
+		if (nPCControl != null) 
 		{
-			targetEnemy = collision.GetComponent<NPCControl>();
-			if (targetEnemy != null)
-			{
-				if (targetEnemy.IsInLight < 1)
-				{
-					targetEnemy.setInlight += setTarget;
-					targetEnemy.setOutlight += ReleaseTarget;
-                    targetEnemy = null;
-				}
-			}
-		}
+			//进入武器范围就注册进入光照事件，一旦进入光照就加入目标库
+			nPCControl.setInlight += setTarget;
+            nPCControl.setOutlight += ReleaseTarget;
+            if (nPCControl.IsInLight > 0)
+			{ 
+				//如果进入武器范围的也同时已经在光照范围内则加入目标库
+				setTarget(nPCControl);
+            }
+        }
+
 	}
 	private void setTarget(NPCControl enemy)
 	{
-		targetEnemy = enemy;
+		if(!targetEnemys.Contains(enemy))
+			targetEnemys.Add(enemy);
 	}
-	private void ReleaseTarget()
+	private void ReleaseTarget(NPCControl enemy)
 	{
-		targetEnemy = null;
+		if(targetEnemys.Contains(enemy))
+			targetEnemys.Remove(enemy);
 	}
 	private void OnTriggerExit2D(Collider2D collision)
 	{
-		if (targetEnemy != null)
+        NPCControl nPCControl = collision.GetComponent<NPCControl>();
+		//有敌人离开武器范围,如果他之前已经在目标库里则移除注册事件，且移出目标库
+		if(nPCControl != null)
 		{
-			NPCControl nPCControl = targetEnemy.GetComponent<NPCControl>();
-			if (nPCControl != null && nPCControl == targetEnemy)
-			{
-				targetEnemy.setInlight -= setTarget;
-				targetEnemy.setOutlight -= ReleaseTarget;
-				targetEnemy = null;
-			}
+            nPCControl.setInlight -= setTarget;
+            nPCControl.setOutlight -= ReleaseTarget;
+            ReleaseTarget(nPCControl);
 		}
 	}
 

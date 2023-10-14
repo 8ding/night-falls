@@ -40,8 +40,8 @@ public class Projectile : MonoBehaviour
 		
 		if (moveDirection != Vector2.zero)
         {
-            rigidbody2.MovePosition(rigidbody2.position + moveDirection.normalized * moveSpeed * Time.deltaTime);
-            if ((transform.position - originPosition).magnitude >= range)
+            rigidbody2.MovePosition(rigidbody2.position + moveDirection.normalized * moveSpeed * Time.fixedDeltaTime);
+            if (Vector2.Distance(originPosition,rigidbody2.position) >= range)
             {
                 pool.Release(this);
             }
